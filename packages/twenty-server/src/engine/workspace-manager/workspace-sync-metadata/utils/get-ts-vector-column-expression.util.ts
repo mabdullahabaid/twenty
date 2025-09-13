@@ -85,6 +85,14 @@ const getColumnExpression = (
       COALESCE(${quotedColumnName}, '') || ' ' ||
       COALESCE(SPLIT_PART(${quotedColumnName}, '@', 2), '')`;
 
+    case FieldMetadataType.PHONES:
+      const normalizedPhoneNumber = `REGEXP_REPLACE(REGEXP_REPLACE("phonesPrimaryPhoneNumber", '[\\s\\-\\(\\)\\+]', '', 'g'), '^0+', '')`;
+
+      return `
+        COALESCE(${normalizedPhoneNumber}, '') || ' ' ||
+        COALESCE(REGEXP_REPLACE("phonesPrimaryPhoneCallingCode", '[\\s\\-\\(\\)\\+]', '', 'g'), '') || COALESCE(${normalizedPhoneNumber}, '')
+        `;
+
     default:
       return `COALESCE(${quotedColumnName}, '')`;
   }
